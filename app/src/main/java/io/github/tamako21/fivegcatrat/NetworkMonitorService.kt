@@ -976,7 +976,7 @@ class NetworkMonitorService : Service() {
         val titleSuffixShort = "計${totalBandwidth}M(${totalEffectiveBw}M)"
         val titleSuffixLong = "計${totalBandwidth}MHz(品質${totalEffectiveBw}MHz・推定上限${String.format("%.1f", theoreticalMbps)}Mbps)"
         val speedStrShort = if (dlMbps > 0 || ulMbps > 0) " | ⬇${String.format("%.1f", dlMbps)}M ⬆${String.format("%.1f", ulMbps)}M" else ""
-        val speedStrLong = if (dlMbps > 0 || ulMbps > 0) "\n　　　　　　　　　　　　　　　↓ ${String.format("%.1f", dlMbps)}Mbps ↑${String.format("%.1f", ulMbps)}Mbps" else ""
+        val speedStrLong = if (dlMbps > 0 || ulMbps > 0) "\n　Link Capacity　↓ ${String.format("%.1f", dlMbps)}Mbps ↑${String.format("%.1f", ulMbps)}Mbps" else ""
 
         // ネットワークの種類ごとにアイコン名とタイトルを設定
         if (isEmergency) { iconText = "緊急"; titleBase = "緊急通報専用モード" }
