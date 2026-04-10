@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="#121212"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/settingsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1E1E1E"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:orientation="vertical">
+
+        <Button android:id="@+id/btnToggle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="監視開始" />
+        <TextView android:id="@+id/textStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="状態: 停止中" android:textAlignment="center" android:textColor="#FFFFFF" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="更新頻度:" android:textColor="#BBBBBB" />
+            <Spinner android:id="@+id/spinnerInterval" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_interval_entries" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
+            <Button android:id="@+id/btnForceUpdate" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="2dp" android:text="🔄更新" android:textSize="11sp" android:padding="0dp"/>
+            <Button android:id="@+id/btnHistory" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:text="📜履歴" android:textSize="11sp" android:padding="0dp"/>
+            <Button android:id="@+id/btnCopyLog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:text="📋ログ" android:textSize="11sp" android:padding="0dp"/>
+            <Button android:id="@+id/btnSaveDump" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:text="💾ﾀﾞﾝﾌﾟ" android:textSize="11sp" android:padding="0dp"/>
+            <Button android:id="@+id/btnAdvancedSettings" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="2dp" android:text="⚙️設定" android:textSize="11sp" android:padding="0dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" android:background="#333333" />
+
+    <RadioGroup android:id="@+id/tabGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="#1E1E1E" android:padding="4dp">
+        <RadioButton android:id="@+id/tabText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="詳細" android:checked="true" android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" android:paddingEnd="16dp"/>
+        <RadioButton android:id="@+id/tabGraph" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="グラフ" android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" android:paddingEnd="16dp"/>
+        <RadioButton android:id="@+id/tabStats" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="統計" android:textColor="#FFFFFF" android:buttonTint="#FFFFFF" />
+    </RadioGroup>
+
+    <TextView android:id="@+id/tvSummary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="データ取得待ち..." android:textStyle="bold" android:textSize="16sp" android:textColor="#FFFFFF" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:background="#121212">
+        <ScrollView android:id="@+id/textTabContent" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="visible">
+            <LinearLayout android:id="@+id/cardContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="8dp" />
+        </ScrollView>
+        <LinearLayout android:id="@+id/graphTabContent" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="8dp" android:visibility="gone">
+            <io.github.tamako21.fivegcatrat.PipeGraphView android:id="@+id/mainPipeGraphView" android:layout_width="match_parent" android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/statsTabContent" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
+            <Button android:id="@+id/btnResetStats" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🔄 統計と履歴をリセット" android:layout_marginBottom="8dp"/>
+            <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+                <LinearLayout android:id="@+id/statsContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+            </ScrollView>
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

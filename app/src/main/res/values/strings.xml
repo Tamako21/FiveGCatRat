@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">5G CAT-RAT</string>
+    <string name="tab_text">詳細データ</string>
+    <string name="tab_graph">グラフビュー</string>
+
+    <string-array name="pref_display_mode_entries">
+        <item>標準 (4G/5G/5G+)</item>
+        <item>詳細 (5転/NSA 等)</item>
+    </string-array>
+
+    <string-array name="pref_interval_entries">
+        <item>2秒 (リアルタイム)</item>
+        <item>5秒 (標準)</item>
+        <item>10秒 (バッテリー節約)</item>
+        <item>30秒</item>
+        <item>60秒</item>
+    </string-array>
+
+    <string-array name="pref_value_format_entries">
+        <item>生データ表示 (dBm / dB)</item>
+        <item>評価値表示 (Lv)</item>
+    </string-array>
+
+    <string-array name="pref_tx_power_entries">
+        <item>マクロ(屋外) / 46dBm</item>
+        <item>スモール(街頭) / 30dBm</item>
+        <item>ビル内(屋内) / 15dBm</item>
+    </string-array>
+
+    <string-array name="pref_env_mode_entries">
+        <item>開けた場所 (n=2.5)</item>
+        <item>郊外・住宅街 (n=3.5)</item>
+        <item>都市部・ビル街 (n=4.0)</item>
+        <item>屋内・地下 (n=5.0)</item>
+    </string-array>
+
+    <string-array name="pref_overlay_gravity_entries">
+        <item>左寄せ</item>
+        <item>中央寄せ</item>
+        <item>右寄せ</item>
+    </string-array>
+
+    <string-array name="pref_packet_stall_alert_entries">
+        <item>表示しない</item>
+        <item>表示する</item>
+    </string-array>
+    <string-array name="pref_ping_target_entries">
+        <item>8.8.8.8 (Google)</item>
+        <item>1.1.1.1 (Cloudflare)</item>
+        <item>手入力(下の枠に入力)</item>
+    </string-array>
+
+    <string-array name="pref_ping_freq_entries">
+        <item>オフ (送信しない)</item>
+        <item>2秒間隔</item>
+        <item>5秒間隔</item>
+        <item>10秒間隔</item>
+        <item>30秒間隔</item>
+        <item>60秒間隔</item>
+    </string-array>
+
+    <string-array name="pref_ping_boolean_entries">
+        <item>オフ</item>
+        <item>オン</item>
+    </string-array>
+
+    <string-array name="pref_ncell_display_entries">
+        <item>表示しない</item>
+        <item>表示する(詳細カードのみ)</item>
+    </string-array>
+
+</resources>

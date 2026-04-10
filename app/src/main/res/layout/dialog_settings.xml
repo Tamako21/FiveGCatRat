@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ 動作設定" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="対象SIM:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerSimSlot" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:backgroundTint="#FFFFFF" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ 各項目表示" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="バンド表記:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerBandDisp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:backgroundTint="#FFFFFF" />
+        </LinearLayout>
+
+        <Switch android:id="@+id/switchShowRsrp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="RSRP (電波強度) を表示" />
+        <Switch android:id="@+id/switchShowRsrq" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="RSRQ (電波品質) を表示" />
+        <Switch android:id="@+id/switchShowSinr" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="SINR (信号対雑音比) を表示" />
+        <Switch android:id="@+id/switchShowCqi" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CQI (チャネル品質) を表示" />
+        <Switch android:id="@+id/switchShowQl" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="QL (品質レベル) を表示" />
+        <Switch android:id="@+id/switchShowTa" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TA (推定距離) を表示" />
+        <Switch android:id="@+id/switchShowLevel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="評価値 (Lv.X) を表示" />
+        <Switch android:id="@+id/switchShowCong" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="混雑度予測 (○, △など) を表示" />
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ 画面表示" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="アイコン表示:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerModeDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_display_mode_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="値の形式:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerValueFormatDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_value_format_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="パケ詰警告:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerPacketStallDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_packet_stall_alert_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="周辺(NCell):" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerNcellDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_ncell_display_entries" />
+        </LinearLayout>
+
+        <Switch android:id="@+id/switchStrictStandbyDialog" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="待機時(RRC Idle)を厳密に表示" android:textStyle="bold"/>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ 距離推定パラメータ (TA未取得時)" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="送信電力:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerTxPowerDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_tx_power_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="伝搬環境:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerEnvDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_env_mode_entries" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ CSVマップログ記録" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <Switch
+            android:id="@+id/switchCsvLogDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CSVマップログを記録する"
+            android:textStyle="bold" />
+
+        <Switch
+            android:id="@+id/switchCsvLogAllCells"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="┗ 周辺セル(SCell/NCell)も記録する"
+            android:textSize="13sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CSV保存先 (空欄でDownloads/5GCATRAT/CSV)"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:layout_marginTop="12dp"/>
+        <EditText
+            android:id="@+id/editCsvCustomPath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="/storage/emulated/0/MyMapLogs"
+            android:textColorHint="#555555"
+            android:textSize="14sp"
+            android:inputType="textUri"/>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ オーバーレイ(小窓)表示" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <Switch android:id="@+id/switchOverlayDialog" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="オーバーレイ表示を有効にする" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="文字揃え:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerOverlayGravityDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_overlay_gravity_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="文字ｻｲｽﾞ:" />
+            <SeekBar android:id="@+id/seekOverlaySizeDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="30" android:progress="12"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="横位置:" />
+            <SeekBar android:id="@+id/seekOverlayXDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="1000" android:progress="500"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp" android:gravity="center_vertical">
+            <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="縦位置:" />
+            <SeekBar android:id="@+id/seekOverlayYDialog" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="1000" android:progress="0"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#444444" android:layout_marginVertical="12dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="■ Ping通信監視" android:textColor="#2196F3" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="Ping頻度:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerPingFreq" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_ping_freq_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="Ping宛先:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerPingTarget" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_ping_target_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="ｶｽﾀﾑIP:" android:textStyle="bold"/>
+            <EditText android:id="@+id/editPingCustomIp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:inputType="textUri" android:hint="例: 1.1.1.1" android:textSize="14sp"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="小窓に表示:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerPingDisplay" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_ping_boolean_entries" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <TextView android:layout_width="100dp" android:layout_height="wrap_content" android:text="Wi-Fi時:" android:textStyle="bold"/>
+            <Spinner android:id="@+id/spinnerPingWifi" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:entries="@array/pref_ping_boolean_entries" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
