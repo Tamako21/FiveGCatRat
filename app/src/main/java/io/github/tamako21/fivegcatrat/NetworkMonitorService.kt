@@ -984,8 +984,8 @@ class NetworkMonitorService : Service() {
         else if (isSa && !isCa) { iconText = if (displayMode == 1) (if (isTenyo) "5転/SA" else "5G/SA") else "5G"; titleBase = if (isTenyo) "転用5G SA" else "5G SA" }
         else if (hasNR && isTenyo) { iconText = if (displayMode == 1) "5転/NSA" else "5G"; titleBase = "転用5G NSA" }
         else if (hasNR && !isTenyo) { iconText = if (displayMode == 1) "5G/NSA" else "5G"; titleBase = "5G NSA" }
-        else if (!hasNR && isCa && isEndcAnchor) { iconText = if (displayMode == 1) "4G/eLTE" else "4G"; titleBase = "4G CA(アンカー)" }
-        else if (!hasNR && isCa && !isEndcAnchor) { iconText = "4G"; titleBase = "4G CA" }
+        else if (!hasNR && isCa && isEndcAnchor) { iconText = if (displayMode == 1) "4G+/eLTE" else "4G+"; titleBase = "4G CA(アンカー)" }
+        else if (!hasNR && isCa && !isEndcAnchor) { iconText = "4G+"; titleBase = "4G CA" }
         else if (!hasNR && !isCa && isEndcAnchor) { iconText = if (displayMode == 1) "4G/eLTE" else "4G"; titleBase = "4G(アンカー)" }
         else { iconText = "4G"; titleBase = "4G" }
 
@@ -1045,7 +1045,7 @@ class NetworkMonitorService : Service() {
             val realFreqStr = getFrequencyFromArfcn(ch.band, ch.earfcn, ch.type == "5G")
             val freqMhz = realFreqStr.replace(" MHz", "").toDoubleOrNull() ?: 2000.0
 
-            val distanceStr = if (showTa) calculateDistance(ch.ta, ch.rsrp, txPowerIdx, envIdx, freqMhz) else ""
+            val distanceStr = if (showTa) calculateDistance(ch, txPowerIdx, envIdx, freqMhz) else ""
 
             val part1 = "$bandName$bwStr"
             val distAndCong = "$distanceStr$conSymbol".trim()
@@ -1101,7 +1101,7 @@ class NetworkMonitorService : Service() {
                 val realFreqStr = getFrequencyFromArfcn(ch.band, ch.earfcn, ch.type == "5G")
                 val freqMhz = realFreqStr.replace(" MHz", "").toDoubleOrNull() ?: 2000.0
 
-                obj.put("distance", calculateDistance(ch.ta, ch.rsrp, txPowerIdx, envIdx, freqMhz))
+                obj.put("distance", calculateDistance(ch, txPowerIdx, envIdx, freqMhz))
                 obj.put("realFreq", realFreqStr)
                 obj.put("cqi", ch.cqi)
                 obj.put("ta", ch.ta)
@@ -1603,21 +1603,34 @@ class NetworkMonitorService : Service() {
     }
 
     // Timing Advance (TA) や RSRP (電波強度) から基地局までの推定距離を計算する
-    private fun calculateDistance(ta: Int, rsrp: Int, txPowerIdx: Int, envIdx: Int, freqMhz: Double): String {
-        if (ta != UNAVAILABLE_VALUE && ta in 0..20000) {
-            if (ta == 0) {
-                return "TA0 <78m"
+    private fun calculateDistance(ch: ChannelData, txPowerIdx: Int, envIdx: Int, freqMhz: Double): String {
+        if (ch.ta != UNAVAILABLE_VALUE && ch.ta in 0..20000) {
+
+            // 1. NSAのSCell（5GかつPrimaryではない）でTAが0の場合は未測定(サボり)とみなす
+            if (ch.ta == 0 && ch.type == "5G" && !ch.isPrimary) {
+                return "TA: - (未測定)"
+            }
+
+            // 2. SCSから1単位あたりの距離（m）を推測する
+            val taMultiplier = when {
+                ch.type == "5G" && ch.band in listOf("257", "258", "259", "260", "261") -> 9.75 // ミリ波 (SCS 120kHz)
+                ch.type == "5G" && ch.bwMhz > 50 -> 39.06 // 50MHz超えのSub6はSCS 30kHzが確定的
+                else -> 78.12 // 4Gや、15kHzの5G
+            }
+
+            if (ch.ta == 0) {
+                return "TA0 <${taMultiplier.toInt()}m"
             } else {
-                val taMeters = ta * 78.12
+                val taMeters = ch.ta * taMultiplier
                 return if (taMeters < 1000.0) {
-                    String.format("TA%d 約%dm", ta, taMeters.toInt())
+                    String.format("TA%d 約%dm", ch.ta, taMeters.toInt())
                 } else {
-                    String.format("TA%d 約%.2fkm", ta, taMeters / 1000.0)
+                    String.format("TA%d 約%.2fkm", ch.ta, taMeters / 1000.0)
                 }
             }
         }
 
-        if (rsrp == UNAVAILABLE_VALUE || rsrp > 0) return "- m"
+        if (ch.rsrp == UNAVAILABLE_VALUE || ch.rsrp > 0) return "- m"
 
         val ptDbm = when (txPowerIdx) { 0 -> 46.0; 1 -> 30.0; 2 -> 15.0; else -> 30.0 }
         val n = when (envIdx) { 0 -> 2.5; 1 -> 3.5; 2 -> 4.0; 3 -> 5.0; else -> 3.5 }
@@ -1625,7 +1638,7 @@ class NetworkMonitorService : Service() {
         val safeFreq = if (freqMhz > 0.0) freqMhz else 2000.0
         val l0_1m = 20.0 * Math.log10(safeFreq) - 27.56
 
-        val distanceLog = (ptDbm - rsrp.toDouble() - l0_1m) / (10.0 * n)
+        val distanceLog = (ptDbm - ch.rsrp.toDouble() - l0_1m) / (10.0 * n)
         val distanceMeters = Math.pow(10.0, distanceLog).coerceAtLeast(1.0)
 
         return if (distanceMeters < 1000.0) {
