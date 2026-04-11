@@ -1489,6 +1489,7 @@ class NetworkMonitorService : Service() {
             val prefs = getSharedPreferences("FiveGCheckerPrefs", Context.MODE_PRIVATE)
             val isEnabled = prefs.getBoolean("overlay_enabled", false)
             val showCongestion = prefs.getBoolean("pref_show_congestion", false)
+            val showQl = prefs.getBoolean("pref_show_ql", true)
 
             if (!isEnabled || !Settings.canDrawOverlays(this)) {
                 removeOverlay()
@@ -1546,7 +1547,8 @@ class NetworkMonitorService : Service() {
                 val prefix = if (ch.type == "5G") "n" else "B"
                 val expectRsrq = getExpectedRsrq(ch.rsrp, ch.type == "5G")
                 val conSymbol = if (showCongestion) getCongestionSymbol(ch.rsrq, expectRsrq) else ""
-                "$role:$prefix${ch.band}(${ch.ql})$conSymbol"
+                val qlStr = if (showQl) "(${ch.ql})" else ""
+                "$role:$prefix${ch.band}$qlStr$conSymbol"
             }
 
             val br = if (pingStr.isNotEmpty() || line2.isNotEmpty()) "\n" else ""
