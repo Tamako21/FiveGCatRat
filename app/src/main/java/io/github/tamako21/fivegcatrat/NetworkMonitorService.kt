@@ -774,13 +774,13 @@ class NetworkMonitorService : Service() {
 
         // 周辺セル（NCell）の表示設定がオンならリストに追加する
         if (prefs.getInt("ncell_display", 0) == 1) {
+
+            // 1. まず標準APIからNCellを取得（Pixel等端末用）
             standardCells.filter { !it.isRegistered }.forEach { std ->
                 var bandStr = std.bands.firstOrNull() ?: ""
-
                 val mccFinal = if (isEmergency && channels.isNotEmpty()) channels.first().mcc else std.mcc
                 val mncFinal = if (isEmergency && channels.isNotEmpty()) channels.first().mnc else std.mnc
 
-                // バンド名が不明な場合は周波数(EARFCN)から推測する
                 if (bandStr.isEmpty() || bandStr == "?") {
                     val guessed = guessBandFromArfcn(std.earfcn, std.type == "5G", mccFinal, mncFinal)
                     bandStr = if (guessed != "?") "$guessed?" else "?"
@@ -789,6 +789,26 @@ class NetworkMonitorService : Service() {
                 val ch = ChannelData(false, false, std.type, bandStr, 0, std.earfcn, std.pci, std.rsrp, std.rsrq, std.sinr, 0, std.cqi, std.ta, std.ci, mccFinal, mncFinal)
                 calculateQualityAndSpeed(ch)
                 channels.add(ch)
+            }
+
+            // 2. dumpsysのプールに残っているNCellも取得（標準APIが機能しない端末への救済措置）
+            dumpsysPool.filter { !it.isRegistered && !it.used }.forEach { dump ->
+                // NCellかつPCIがまともなものだけ（ゴミデータ除外）
+                if (dump.pci > 0 && dump.pci != UNAVAILABLE_VALUE) {
+                    var bandStr = dump.bands.firstOrNull() ?: ""
+                    val mccFinal = if (isEmergency && channels.isNotEmpty()) channels.first().mcc else dump.mcc
+                    val mncFinal = if (isEmergency && channels.isNotEmpty()) channels.first().mnc else dump.mnc
+
+                    if (bandStr.isEmpty() || bandStr == "?") {
+                        val guessed = guessBandFromArfcn(dump.earfcn, dump.type == "5G", mccFinal, mncFinal)
+                        bandStr = if (guessed != "?") "$guessed?" else "?"
+                    }
+
+                    val ch = ChannelData(false, false, dump.type, bandStr, 0, dump.earfcn, dump.pci, dump.rsrp, dump.rsrq, dump.sinr, 0, dump.cqi, dump.ta, dump.ci, mccFinal, mncFinal)
+                    calculateQualityAndSpeed(ch)
+                    channels.add(ch)
+                    dump.used = true
+                }
             }
         }
 
