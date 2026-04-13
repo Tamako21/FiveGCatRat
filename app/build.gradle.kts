@@ -14,8 +14,8 @@ android {
         applicationId = "io.github.tamako21.fivegcatrat"
         minSdk = 31
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.1.4"
+        versionCode = 7
+        versionName = "0.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

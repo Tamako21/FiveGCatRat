@@ -834,10 +834,13 @@ class NetworkMonitorService : Service() {
             }
         }
 
-        // 同一周波数・同PCIの重複セルを整理する
+// 同一周波数・同PCIの重複セルを整理する
         val mergedMap = mutableMapOf<String, ChannelData>()
-        for (ch in validChannels) {
-            val key = "${ch.type}_${ch.earfcn}_${ch.pci}_${ch.isRegistered}"
+
+        // 1. まず「登録済み（PCell/SCell）」のセルだけを先にマップへ入れる
+        for (ch in validChannels.filter { it.isRegistered }) {
+            // isRegisteredをキーに含めないことで、登録済み/未登録の重複を検知できるようにする
+            val key = "${ch.type}_${ch.earfcn}_${ch.pci}"
             val existing = mergedMap[key]
             if (existing == null) {
                 mergedMap[key] = ch
@@ -845,6 +848,22 @@ class NetworkMonitorService : Service() {
                 if (!existing.isPrimary && ch.isPrimary) {
                     mergedMap[key] = ch
                 } else if (existing.isPrimary == ch.isPrimary) {
+                    if (existing.rsrp == UNAVAILABLE_VALUE && ch.rsrp != UNAVAILABLE_VALUE) {
+                        mergedMap[key] = ch
+                    }
+                }
+            }
+        }
+
+        // 2. 次に「未登録（NCell）」のセルを処理する
+        for (ch in validChannels.filter { !it.isRegistered }) {
+            val key = "${ch.type}_${ch.earfcn}_${ch.pci}"
+            // すでにPCellやSCellとして同じPCIが存在している場合は、タイムラグによる「ゴーストNCell」なので無視する
+            if (!mergedMap.containsKey(key)) {
+                val existing = mergedMap[key]
+                if (existing == null) {
+                    mergedMap[key] = ch
+                } else {
                     if (existing.rsrp == UNAVAILABLE_VALUE && ch.rsrp != UNAVAILABLE_VALUE) {
                         mergedMap[key] = ch
                     }
@@ -1000,7 +1019,7 @@ class NetworkMonitorService : Service() {
 
         // ネットワークの種類ごとにアイコン名とタイトルを設定
         if (isEmergency) { iconText = "緊急"; titleBase = "緊急通報専用モード" }
-        else if (isSa && isCa) { iconText = if (displayMode == 1) "5G/SA" else "5G"; titleBase = "5G SA CA" }
+        else if (isSa && isCa) { iconText = if (displayMode == 1) "5G/SA" else "5G+"; titleBase = "5G SA CA" }
         else if (isSa && !isCa) { iconText = if (displayMode == 1) (if (isTenyo) "5転/SA" else "5G/SA") else "5G"; titleBase = if (isTenyo) "転用5G SA" else "5G SA" }
         else if (hasNR && isTenyo) { iconText = if (displayMode == 1) "5転/NSA" else "5G"; titleBase = "転用5G NSA" }
         else if (hasNR && !isTenyo) { iconText = if (displayMode == 1) "5G/NSA" else "5G"; titleBase = "5G NSA" }
@@ -1624,11 +1643,35 @@ class NetworkMonitorService : Service() {
 
     // Timing Advance (TA) や RSRP (電波強度) から基地局までの推定距離を計算する
     private fun calculateDistance(ch: ChannelData, txPowerIdx: Int, envIdx: Int, freqMhz: Double): String {
+
+        // --- 内部ヘルパー関数：RSRP（電波強度）から推定距離を計算 ---
+        fun getRsrpDistance(): String {
+            if (ch.rsrp == UNAVAILABLE_VALUE || ch.rsrp > 0) return "- m"
+
+            val ptDbm = when (txPowerIdx) { 0 -> 46.0; 1 -> 30.0; 2 -> 15.0; else -> 30.0 }
+            val n = when (envIdx) { 0 -> 2.5; 1 -> 3.5; 2 -> 4.0; 3 -> 5.0; else -> 3.5 }
+            val safeFreq = if (freqMhz > 0.0) freqMhz else 2000.0
+
+            // 自由空間基本伝搬損失の定数部分
+            val l0_1m = 20.0 * Math.log10(safeFreq) - 27.56
+
+            val distanceLog = (ptDbm - ch.rsrp.toDouble() - l0_1m) / (10.0 * n)
+            val distanceMeters = Math.pow(10.0, distanceLog).coerceAtLeast(1.0)
+
+            return if (distanceMeters < 1000.0) {
+                String.format("推 %dm", distanceMeters.toInt())
+            } else {
+                String.format("推 %.2fkm", distanceMeters / 1000.0)
+            }
+        }
+        // -----------------------------------------------------
+
         if (ch.ta != UNAVAILABLE_VALUE && ch.ta in 0..20000) {
 
-            // 1. NSAのSCell（5GかつPrimaryではない）でTAが0の場合は未測定(サボり)とみなす
+            // 1. NSAのSCell（5GかつPrimaryではない）でTAが0の場合は未測定(サボり)
             if (ch.ta == 0 && ch.type == "5G" && !ch.isPrimary) {
-                return "TA: - (未測定)"
+                // 【修正ポイント】ただの「未測定」ではなく、RSRPからの推定値にフォールバックして表示する
+                return "TA: - (${getRsrpDistance()})"
             }
 
             // 2. SCSから1単位あたりの距離（m）を推測する
@@ -1650,22 +1693,8 @@ class NetworkMonitorService : Service() {
             }
         }
 
-        if (ch.rsrp == UNAVAILABLE_VALUE || ch.rsrp > 0) return "- m"
-
-        val ptDbm = when (txPowerIdx) { 0 -> 46.0; 1 -> 30.0; 2 -> 15.0; else -> 30.0 }
-        val n = when (envIdx) { 0 -> 2.5; 1 -> 3.5; 2 -> 4.0; 3 -> 5.0; else -> 3.5 }
-
-        val safeFreq = if (freqMhz > 0.0) freqMhz else 2000.0
-        val l0_1m = 20.0 * Math.log10(safeFreq) - 27.56
-
-        val distanceLog = (ptDbm - ch.rsrp.toDouble() - l0_1m) / (10.0 * n)
-        val distanceMeters = Math.pow(10.0, distanceLog).coerceAtLeast(1.0)
-
-        return if (distanceMeters < 1000.0) {
-            String.format("推 %dm", distanceMeters.toInt())
-        } else {
-            String.format("推 %.2fkm", distanceMeters / 1000.0)
-        }
+        // TAそのものが取得できていない場合も、RSRPから推定
+        return getRsrpDistance()
     }
 
     // ステータスバー通知の作成と更新
